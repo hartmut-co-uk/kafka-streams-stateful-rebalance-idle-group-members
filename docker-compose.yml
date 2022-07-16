@@ -48,6 +48,15 @@ services:
 #      SCHEMA_REGISTRY_HOST_NAME: schema-registry
 #      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker:9092'
 
+  datagen-1:
+    build: .
+    container_name: datagen-1
+    restart: on-failure
+    image: kafka-streams-stateful-rebalance-idle-group-members
+    command: ["sh", "-c", "java -noverify -cp /app/app.jar io.confluent.developer.KafkaProducerApplication config.properties"]
+    depends_on:
+      - broker
+
   app-1:
     build: .
     container_name: app-1

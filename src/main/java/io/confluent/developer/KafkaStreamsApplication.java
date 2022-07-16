@@ -59,7 +59,6 @@ public class KafkaStreamsApplication {
     }
 
     public static void main(String[] args) throws Exception {
-
         if (args.length < 1) {
             throw new IllegalArgumentException("This program takes one argument: the path to a configuration file.");
         }
@@ -69,30 +68,16 @@ public class KafkaStreamsApplication {
             props.load(inputStream);
         }
 
-        final Integer numPartitions = Integer.parseInt(props.getProperty("topics.num-partitions"));
-        final Short replicationFactor = Short.parseShort(props.getProperty("topics.replication-factor"));
-
         final String inputTopic = props.getProperty("input.topic.name");
 
-        try (Util utility = new Util()) {
+        // Ramdomizer only used to produce sample data for this application, not typical usage
+        KafkaStreams kafkaStreams = new KafkaStreams(
+                buildTopology(inputTopic),
+                props);
 
-            utility.createTopics(
-                    props,
-                    Arrays.asList(
-                            new NewTopic(inputTopic, numPartitions, replicationFactor)));
+        Runtime.getRuntime().addShutdownHook(new Thread(kafkaStreams::close));
 
-            // Ramdomizer only used to produce sample data for this application, not typical usage
-            try (Util.Randomizer rando = utility.startNewRandomizer(props, inputTopic)) {
-
-                KafkaStreams kafkaStreams = new KafkaStreams(
-                        buildTopology(inputTopic),
-                        props);
-
-                Runtime.getRuntime().addShutdownHook(new Thread(kafkaStreams::close));
-
-                logger.info("Kafka Streams 101 App Started");
-                runKafkaStreams(kafkaStreams);
-            }
-        }
+        logger.info("Kafka Streams 101 App Started");
+        runKafkaStreams(kafkaStreams);
     }
 }

@@ -1,6 +1,15 @@
 ## kafka-streams-stateful-rebalance-idle-group-members
 
-TODO
+TODO: describe problem
+
+### stack
+
+* Java 11
+* kafka-streams 2.8.1
+* topics: 1
+* stores: 1 (KTable)
+
+### howto reproduce
 
     docker exec -it broker kafka-consumer-groups --bootstrap-server broker:9092 --group kafka-streams-101 --describe
 
