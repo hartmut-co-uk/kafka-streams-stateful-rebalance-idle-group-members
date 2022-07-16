@@ -17,3 +17,4 @@ TODO: describe problem
     docker-compose logs --tail 0 -t --follow 2>&1 |grep -A 4 "per-consumer assignment"
     docker-compose logs --tail 0 -t --follow 2>&1 |grep -A 4 "Handle new assignment"
     docker-compose logs --tail 0 -t --follow 2>&1 |grep -A 6 "Assigned tasks"
+    docker-compose logs --tail 0 -t --follow 2>&1 |grep "Restoration took"    

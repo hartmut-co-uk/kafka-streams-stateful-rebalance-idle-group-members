@@ -50,7 +50,7 @@ public class KafkaProducerApplication {
         Faker faker = new Faker();
         final ProducerRecord<String, String> producerRecord = new ProducerRecord<>(
                 this.outTopic,
-                String.valueOf(random.nextInt(12 * 10)),
+                String.valueOf(random.nextInt(1_000_000)),
                 faker.chuckNorris().fact());
         return producer.send(producerRecord);
     }
