@@ -53,7 +53,24 @@ services:
     container_name: datagen-1
     restart: on-failure
     image: kafka-streams-stateful-rebalance-idle-group-members
-    command: ["sh", "-c", "java -noverify -cp /app/app.jar io.confluent.developer.KafkaProducerApplication config.properties"]
+    command: ["sh", "-c", "java -noverify -cp /app/app.jar io.confluent.developer.KafkaProducerApplication config.properties random-strings-1"]
+    environment:
+      CLIENT_ID: datagen-1
+      BATCH_SIZE: 50
+      BATCH_SCHEDULE_MS: 500
+    depends_on:
+      - broker
+
+  datagen-2:
+    build: .
+    container_name: datagen-2
+    restart: on-failure
+    image: kafka-streams-stateful-rebalance-idle-group-members
+    command: ["sh", "-c", "java -noverify -cp /app/app.jar io.confluent.developer.KafkaProducerApplication config.properties random-strings-2"]
+    environment:
+      CLIENT_ID: datagen-1
+      BATCH_SIZE: 50
+      BATCH_SCHEDULE_MS: 500
     depends_on:
       - broker
 

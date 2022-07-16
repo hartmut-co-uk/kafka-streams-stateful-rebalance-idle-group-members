@@ -8,6 +8,7 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
+import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.state.Stores;
 import org.slf4j.Logger;
@@ -42,18 +43,34 @@ public class KafkaStreamsApplication {
         logger.info("Streams Closed");
     }
 
-    static Topology buildTopology(String inputTopic) {
+    static Topology buildTopology(String inputTopic1, String inputTopic2, String outputTopic) {
         Serde<String> stringSerde = Serdes.String();
 
         StreamsBuilder builder = new StreamsBuilder();
 
-        builder
-                .stream(inputTopic, Consumed.with(stringSerde, stringSerde))
-                .peek((k, v) -> logger.info("Observed event: {}", v))
+        KTable<String, String> table1 = builder
+                .stream(inputTopic1, Consumed.with(stringSerde, stringSerde))
+                .peek((k, v) -> logger.info("on {} observed event: {}", inputTopic1, v))
                 .toTable(
-                        Materialized.<String, String>as(Stores.inMemoryKeyValueStore("store-name"))
+                        Materialized.<String, String>as(Stores.inMemoryKeyValueStore(inputTopic1 + "-store"))
                                 .withKeySerde(stringSerde)
                                 .withValueSerde(stringSerde));
+
+        KTable<String, String> table2 = builder
+                .stream(inputTopic2, Consumed.with(stringSerde, stringSerde))
+                .peek((k, v) -> logger.info("on {} observed event: {}", inputTopic2, v))
+                .toTable(
+                        Materialized.<String, String>as(Stores.inMemoryKeyValueStore(inputTopic2 + "-store"))
+                                .withKeySerde(stringSerde)
+                                .withValueSerde(stringSerde));
+
+        table1.join(table2, (s1, s2) -> s1 + " && " + s2,
+                        Materialized.<String, String>as(Stores.inMemoryKeyValueStore("joined-topics-store"))
+                                .withKeySerde(stringSerde)
+                                .withValueSerde(stringSerde))
+                .toStream()
+                .peek((k, v) -> logger.info("joined on {} resulting in: {}", inputTopic2, v))
+                .to(outputTopic);
 
         return builder.build();
     }
@@ -68,11 +85,15 @@ public class KafkaStreamsApplication {
             props.load(inputStream);
         }
 
-        final String inputTopic = props.getProperty("input.topic.name");
+        final String inputTopic1 = props.getProperty("input.topic1.name");
+        final String inputTopic2 = props.getProperty("input.topic2.name");
+        final String outputTopic = props.getProperty("output.topic1.name");
+
+        Util.createTopics(props, Arrays.asList(inputTopic1, inputTopic2, outputTopic));
 
         // Ramdomizer only used to produce sample data for this application, not typical usage
         KafkaStreams kafkaStreams = new KafkaStreams(
-                buildTopology(inputTopic),
+                buildTopology(inputTopic1, inputTopic2, outputTopic),
                 props);
 
         Runtime.getRuntime().addShutdownHook(new Thread(kafkaStreams::close));
