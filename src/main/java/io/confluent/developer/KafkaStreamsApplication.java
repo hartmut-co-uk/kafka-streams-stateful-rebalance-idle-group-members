@@ -1,11 +1,10 @@
 package io.confluent.developer;
 
-import org.apache.kafka.clients.admin.NewTopic;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KTable;
@@ -19,6 +18,8 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
+
+import static java.lang.System.getenv;
 
 public class KafkaStreamsApplication {
 
@@ -84,6 +85,11 @@ public class KafkaStreamsApplication {
         try (InputStream inputStream = new FileInputStream(args[0])) {
             props.load(inputStream);
         }
+        props.put(StreamsConfig.NUM_STREAM_THREADS_CONFIG, getenv().getOrDefault("NUM_STREAM_THREADS", "1"));
+        props.put(StreamsConfig.MAX_WARMUP_REPLICAS_CONFIG, getenv().getOrDefault("MAX_WARMUP_REPLICAS", "2"));
+        props.put(StreamsConfig.MAX_TASK_IDLE_MS_CONFIG, getenv().getOrDefault("MAX_TASK_IDLE_MS", "30000"));
+        props.put(StreamsConfig.ACCEPTABLE_RECOVERY_LAG_CONFIG, getenv().getOrDefault("ACCEPTABLE_RECOVERY_LAG", "10000"));
+        props.put(StreamsConfig.PROBING_REBALANCE_INTERVAL_MS_CONFIG, getenv().getOrDefault("PROBING_REBALANCE_INTERVAL_MS", "60000"));
 
         final String inputTopic1 = props.getProperty("input.topic1.name");
         final String inputTopic2 = props.getProperty("input.topic2.name");

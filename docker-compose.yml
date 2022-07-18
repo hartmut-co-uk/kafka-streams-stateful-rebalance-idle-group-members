@@ -79,6 +79,12 @@ services:
     container_name: app-1
     restart: on-failure
     image: kafka-streams-stateful-rebalance-idle-group-members
+    environment:
+      #NUM_STREAM_THREADS: 6
+      #MAX_WARMUP_REPLICAS: 4
+      MAX_TASK_IDLE_MS: 30000
+      ACCEPTABLE_RECOVERY_LAG: 10000
+      PROBING_REBALANCE_INTERVAL_MS: 60000
     depends_on:
       - broker
 
@@ -87,6 +93,12 @@ services:
     container_name: app-2
     restart: on-failure
     image: kafka-streams-stateful-rebalance-idle-group-members
+    environment:
+      #NUM_STREAM_THREADS: 6
+      #MAX_WARMUP_REPLICAS: 4
+      MAX_TASK_IDLE_MS: 30000
+      ACCEPTABLE_RECOVERY_LAG: 10000
+      PROBING_REBALANCE_INTERVAL_MS: 60000
     depends_on:
       - broker
 
@@ -95,6 +107,12 @@ services:
     container_name: app-3
     restart: on-failure
     image: kafka-streams-stateful-rebalance-idle-group-members
+    environment:
+      #NUM_STREAM_THREADS: 6
+      #MAX_WARMUP_REPLICAS: 4
+      MAX_TASK_IDLE_MS: 30000
+      ACCEPTABLE_RECOVERY_LAG: 10000
+      PROBING_REBALANCE_INTERVAL_MS: 60000
     depends_on:
       - broker
 
@@ -103,6 +121,12 @@ services:
     container_name: app-4
     restart: on-failure
     image: kafka-streams-stateful-rebalance-idle-group-members
+    environment:
+      #NUM_STREAM_THREADS: 6
+      #MAX_WARMUP_REPLICAS: 4
+      MAX_TASK_IDLE_MS: 30000
+      ACCEPTABLE_RECOVERY_LAG: 10000
+      PROBING_REBALANCE_INTERVAL_MS: 60000
     depends_on:
       - broker
 
@@ -111,6 +135,12 @@ services:
     container_name: app-5
     restart: on-failure
     image: kafka-streams-stateful-rebalance-idle-group-members
+    environment:
+      #NUM_STREAM_THREADS: 6
+      #MAX_WARMUP_REPLICAS: 4
+      MAX_TASK_IDLE_MS: 30000
+      ACCEPTABLE_RECOVERY_LAG: 10000
+      PROBING_REBALANCE_INTERVAL_MS: 60000
     depends_on:
       - broker
 
@@ -119,5 +149,11 @@ services:
     container_name: app-6
     restart: on-failure
     image: kafka-streams-stateful-rebalance-idle-group-members
+    environment:
+      #NUM_STREAM_THREADS: 6
+      #MAX_WARMUP_REPLICAS: 4
+      MAX_TASK_IDLE_MS: 30000
+      ACCEPTABLE_RECOVERY_LAG: 10000
+      PROBING_REBALANCE_INTERVAL_MS: 60000
     depends_on:
       - broker
